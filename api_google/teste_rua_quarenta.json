@@ -1,0 +1,68 @@
+{
+   "results" : [
+      {
+         "address_components" : [
+            {
+               "long_name" : "181",
+               "short_name" : "181",
+               "types" : [ "street_number" ]
+            },
+            {
+               "long_name" : "Rua Quarenta A",
+               "short_name" : "R. Quarenta A",
+               "types" : [ "route" ]
+            },
+            {
+               "long_name" : "Maracangalha",
+               "short_name" : "Maracangalha",
+               "types" : [ "political", "sublocality", "sublocality_level_1" ]
+            },
+            {
+               "long_name" : "Belém",
+               "short_name" : "Belém",
+               "types" : [ "administrative_area_level_2", "political" ]
+            },
+            {
+               "long_name" : "Pará",
+               "short_name" : "PA",
+               "types" : [ "administrative_area_level_1", "political" ]
+            },
+            {
+               "long_name" : "Brasil",
+               "short_name" : "BR",
+               "types" : [ "country", "political" ]
+            },
+            {
+               "long_name" : "66110-036",
+               "short_name" : "66110-036",
+               "types" : [ "postal_code" ]
+            }
+         ],
+         "formatted_address" : "R. Quarenta A, 181 - Maracangalha, Belém - PA, 66110-036, Brasil",
+         "geometry" : {
+            "location" : {
+               "lat" : -1.400045,
+               "lng" : -48.488917
+            },
+            "location_type" : "ROOFTOP",
+            "viewport" : {
+               "northeast" : {
+                  "lat" : -1.398696019708498,
+                  "lng" : -48.4875680197085
+               },
+               "southwest" : {
+                  "lat" : -1.401393980291502,
+                  "lng" : -48.4902659802915
+               }
+            }
+         },
+         "place_id" : "ChIJ_wh6NJ2JpJIRUlB6q6JSvxw",
+         "plus_code" : {
+            "compound_code" : "HGX6+XC Maracangalha, Belém - PA, Brasil",
+            "global_code" : "68CHHGX6+XC"
+         },
+         "types" : [ "street_address" ]
+      }
+   ],
+   "status" : "OK"
+}
