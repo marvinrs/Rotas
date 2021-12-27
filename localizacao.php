@@ -5,7 +5,7 @@
 
     <?php
       $endereco=$_GET["endereco"];
-      //Transforma o endereco em uma string do PHP e mostra na tela a lat e lng
+      //Transforma o endereco escrito e obtêm o JSON e obtém a latitude e longitude.
       // ini_set("allow_url_fopen", 1);
         $json = file_get_contents('https://maps.googleapis.com/maps/api/geocode/json?address='.$endereco.'&key=AIzaSyD7u0NnHbPwL5vOjrfX8-cL_aiioPftVLc');
         $data = json_decode($json, true);

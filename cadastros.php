@@ -70,6 +70,9 @@
 		echo '</tr></thead>';
 	
 		echo '<tbody>';
+		//Cria array com endereços dos clientes
+		$enderecos=array();
+		$clientes=array();
 		while($aux = mysqli_fetch_assoc($sql)) { 
 			echo '<tr>';
 			echo '<td>'.$aux["nome"].'</td>';
@@ -78,23 +81,33 @@
 			echo '<td>'.$aux["cpf"].'</td>';
 			echo '<td>'.$aux["endereco"].'</td>';
 			echo '<td>'.$aux["cep"].'</td>';
-			
-			$redirecionador='localizacao.php?endereco='.$aux["endereco"];
-			
-			$redirecionador_junto = str_replace(" ", "", $redirecionador);
-			echo '<td><a href='.$redirecionador_junto.'>Localizar</a></td>';
-			//echo '<div onclick="mobile.changePage(....)" >click here</div>';
+		
+			$endereco_localizacao=$aux["endereco"];
+			//array_Push($clientes, $aux["nome"]);
+			//Tira os espaços do endereço.
+			$endereco_localizacao_junto = str_replace(" ", "", $endereco_localizacao);
+			echo '<td><a href=localizacao.php?endereco='.$endereco_localizacao_junto.'>Localizar</a></td>';
 			echo '</tr>';
+			//Adiciona cada endereço no array enderecos
+			array_Push($enderecos, $endereco_localizacao_junto);
 		}
 		mysqli_close($conexao);
+		//mostra os enderecos
+		foreach($enderecos as $valor){
+			//echo $valor;
+		};
+		//mostra os clientes
+		//foreach($clientes as $valor){
+		//	echo $valor;
+		//};
 		echo '<tr>';
 		//echo '<td>'.'redirecionador_calcular_rota'.'</td>';
 		echo '</tbody></table>';
-		echo '<strong>'.'Cacular melhor rota partindo de <font color="#FF0000">Avenida Dr. Gastão Vidigal, 1132 - Vila Leopoldina</font></strong>';
+		echo '<strong>'.'Calcular melhor rota partindo de <font color="#FF0000">Avenida Dr. Gastão Vidigal, 1132 - Vila Leopoldina</font></strong>';
 		?>
-		<button onclick='location.href="melhorrota.php?endereco_thiago="' type="button">Calcular</button>
+		<button onclick='location.href="calcula_maior_distancia.php?<?php $i=1; foreach($enderecos as $valor){ echo "endereco".$i."=".$valor."&"; $i++;} ?>"' type="button">Calcular Maior Distância</button>
 	<?php } ?>
 </div>
 </body>
 </html>
-<!-- SMARV Informática Marvin (91)98156-5857-->
+<!-- SMARV Informática Marvin (91)98156-5857-->s

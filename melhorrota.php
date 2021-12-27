@@ -1,117 +1,116 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Distance Matrix Service</title>
+    <title>Waypoints in Directions</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-    <link rel="stylesheet" type="text/css" href="./style.css" />
-    <script src="./index.js"></script>
-    <?php
-      //Define o endereço inicial
-      $endereco_inicial=str_replace(" ", "", "Avenida Dr. Gastão Vidigal, 1132 - Vila Leopoldina");
-      // Cria as variaveis $destino1, $destino2, etc, de acordo com o número de endereços passados via $_GET.
-      for ($i=1; $i<=count($_GET); $i++){
-        ${"destino$i"} = $_GET["endereco$i"];
-      }
-      //echo $destino1;
-      //echo $destino4;
-      ?>
+    <link rel="stylesheet" type="text/css" href="./style_melhorrota.css" />
   </head>
   <body>
-    <script>
-      function initMap() {
-      const bounds = new google.maps.LatLngBounds();
-      const markersArray = [];
-      const map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 55.53, lng: 9.4 },
-        zoom: 10,
-      });
-      // initialize services
-      const geocoder = new google.maps.Geocoder();
-      const service = new google.maps.DistanceMatrixService();
-      // cria requisicao
-      const origin1 = "<?php echo $endereco_inicial; ?>";
-      for (var i = 1; i <= <?php echo count($_GET);?>; i++) {
-        const destination 'Hello, ${name}';
-      }
-      const destinationA = "Stockholm, Sweden";
-      const destinationB = "";
-      const request = {
-        origins: [origin1],
-        destinations: [destinationA, destinationB],
-        travelMode: google.maps.TravelMode.DRIVING,
-        unitSystem: google.maps.UnitSystem.METRIC,
-        avoidHighways: false,
-        avoidTolls: false,
-      };
-    
-      // put request on page
-      document.getElementById("request").innerText = JSON.stringify(
-        request,
-        null,
-        2
-      );
-      // get distance matrix response
-      service.getDistanceMatrix(request).then((response) => {
-        // put response
-        document.getElementById("response").innerText = JSON.stringify(
-          response,
-          null,
-          2
-        );
-    
-        // show on map
-        const originList = response.originAddresses;
-        const destinationList = response.destinationAddresses;
-    
-        deleteMarkers(markersArray);
-    
-        const showGeocodedAddressOnMap = (asDestination) => {
-          const handler = ({ results }) => {
-            map.fitBounds(bounds.extend(results[0].geometry.location));
-            markersArray.push(
-              new google.maps.Marker({
-                map,
-                position: results[0].geometry.location,
-                label: asDestination ? "D" : "O",
-              })
-            );
-          };
-          return handler;
-        };
-    
-        for (let i = 0; i < originList.length; i++) {
-          const results = response.rows[i].elements;
-    
-          geocoder
-            .geocode({ address: originList[i] })
-            .then(showGeocodedAddressOnMap(false));
-    
-          for (let j = 0; j < results.length; j++) {
-            geocoder
-              .geocode({ address: destinationList[j] })
-              .then(showGeocodedAddressOnMap(true));
-          }
+      <?php
+      //Define o endereço inicial
+      $endereco_inicial=str_replace(" ", "", "Avenida Dr. Gastão Vidigal, 1132 - Vila Leopoldina");
+      //echo $endereco_inicial;
+      //cria o array waypoints de acrodo com o passado via $_GET
+        for ($i=1; $i<=(count($_GET)-1); $i++){
+            $waypoints[$i] = $_GET["endereco$i"];
+            //echo $destino[$i];
         }
-      });
-    }
-    
-    function deleteMarkers(markersArray) {
-      for (let i = 0; i < markersArray.length; i++) {
-        markersArray[i].setMap(null);
-      }
-    
-      markersArray = [];
-    }
-    </script>
+        $valor_waypoints=array_values($waypoints);
+        //transforma o array $waypoints em um Json
+        $waypoints_transformado = json_encode($valor_waypoints, JSON_UNESCAPED_UNICODE);
+      
+        //endereco mais distante - final
+        $distante=$_GET["endereco_mais_distante"];
+        //echo $distante;
+        ?>
     <div id="container">
       <div id="map"></div>
       <div id="sidebar">
-        <h3 style="flex-grow: 0">Request</h3>
-        <pre style="flex-grow: 1" id="request"></pre>
-        <h3 style="flex-grow: 0">Response</h3>
-        <pre style="flex-grow: 1" id="response"></pre>
+        <div>
+          <b>Start:</b>
+          <select id="start">
+            <option value="Avenida Dr. Gastão Vidigal, 1132 - Vila Leopoldina">Avenida Dr. Gastão Vidigal, 1132 - Vila Leopoldina</option>
+          </select>
+          <br />
+          <b>Waypoints:</b> <br />
+          <i>(Ctrl+Click para selecionar vários Waypoints)</i> <br />
+          <select multiple id="waypoints">
+            <?php
+              for ($j=1; $j<=(count($_GET)-1); $j++){
+                echo "<option value='".$waypoints[$j]."'>".$waypoints[$j]."</option>";
+              }
+            ?>
+          </select>
+          <br />
+          <b>End:</b>
+          <select id="end">
+            <option value="<?php echo $distante; ?>"><?php echo $distante; ?></option>
+          </select>
+          <br />
+          <input type="submit" id="submit" />
+        </div>
+        <div id="directions-panel"></div>
       </div>
     </div>
+
+    <script>   
+function initMap() {
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer();
+  const map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 6,
+    center: { lat: 41.85, lng: -87.65 },
+  });
+
+  directionsRenderer.setMap(map);
+  document.getElementById("submit").addEventListener("click", () => {
+    calculateAndDisplayRoute(directionsService, directionsRenderer);
+  });
+}
+
+function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+  const waypts = [];
+  const checkboxArray = document.getElementById("waypoints");
+
+  for (let i = 0; i < checkboxArray.length; i++) {
+    if (checkboxArray.options[i].selected) {
+      waypts.push({
+        location: checkboxArray[i].value,
+        stopover: true,
+      });
+    }
+  }
+
+  directionsService
+    .route({
+      origin: document.getElementById("start").value,
+      destination: document.getElementById("end").value,
+      waypoints: waypts,
+      optimizeWaypoints: true,
+      travelMode: google.maps.TravelMode.DRIVING,
+    })
+    .then((response) => {
+      directionsRenderer.setDirections(response);
+
+      const route = response.routes[0];
+      const summaryPanel = document.getElementById("directions-panel");
+
+      summaryPanel.innerHTML = "";
+
+      // For each route, display summary information.
+      for (let i = 0; i < route.legs.length; i++) {
+        const routeSegment = i + 1;
+
+        summaryPanel.innerHTML +=
+          "<b>Route Segment: " + routeSegment + "</b><br>";
+        summaryPanel.innerHTML += route.legs[i].start_address + " to ";
+        summaryPanel.innerHTML += route.legs[i].end_address + "<br>";
+        summaryPanel.innerHTML += route.legs[i].distance.text + "<br><br>";
+      }
+    })
+    .catch((e) => window.alert("Directions request failed due to " + status));
+}
+</script>
 
     <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
     <script
